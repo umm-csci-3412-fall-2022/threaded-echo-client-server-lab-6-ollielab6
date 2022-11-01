@@ -18,6 +18,11 @@ public class EchoClient {
 		InputStream socketInputStream = socket.getInputStream();
 		OutputStream socketOutputStream = socket.getOutputStream();
 
-		// Put your code here.
+		// Put your code here. 
+		InThread inThread = new InThread(socketOutputStream);
+		Thread Tin = new Thread(inThread);
+
+		OutThread outThread = new OutThread(socketInputStream);
+		Thread Tout = new Thread(outThread);
 	}
 }
