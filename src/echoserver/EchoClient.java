@@ -8,12 +8,12 @@ import java.net.Socket;
 public class EchoClient {
 	public static final int PORT_NUMBER = 6013;
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, InterruptedException {
 		EchoClient client = new EchoClient();
 		client.start();
 	}
 
-	private void start() throws IOException {
+	private void start() throws IOException, InterruptedException {
 		try (Socket socket = new Socket("localhost", PORT_NUMBER)) {
 			InputStream socketInputStream = socket.getInputStream();
 			OutputStream socketOutputStream = socket.getOutputStream();
@@ -26,6 +26,15 @@ public class EchoClient {
 			OutThread outThread = new OutThread(socketInputStream);
 			Thread Tout = new Thread(outThread);
 			Tout.start();
+
+			Tin.join();
+			//Shutdown
+			socket.shutdownOutput();
+			Tout.join();
+			//shutdown
+			
+			socket.close();
+
 		}
 	}
 
@@ -40,9 +49,12 @@ public class EchoClient {
 		@Override
 		public void run() {
 			try {
-				while (true) {
-					System.out.write(socket.read());
+				int data = socket.read();
+				while (data >= 0) {
+					System.out.write(data);
+					data = socket.read();
 				}
+				System.out.flush();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -68,7 +80,6 @@ public class EchoClient {
 					data = System.in.read();
 				}
 				socketOutputStream.flush();
-				socketOutputStream.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
