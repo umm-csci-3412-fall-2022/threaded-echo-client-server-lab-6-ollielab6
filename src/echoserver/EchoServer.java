@@ -16,6 +16,10 @@ public class EchoServer {
 		server.start();
 	}
 
+	/**
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
 	private void start() throws IOException, InterruptedException {
 		try (ServerSocket serverSocket = new ServerSocket(PORT_NUMBER)) {
 			while (true) {

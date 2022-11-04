@@ -1,0 +1,26 @@
+#!/bin/bash
+
+numCalls=$1
+bigFile=$2
+
+for (( i=0; i<$numCalls; i++ ))
+do
+    java echoserver.EchoClient < $bigFile > /dev/null &
+done
+# `date` will record the date *and time* to record how long
+# you had to wait for all the processes to finish.
+# The '+%s%3N' indicates that we want milisecond precision
+# on the current time (default is only accurate to the second)
+startTime=$(date +%s%3N)
+wait
+endTime=$(date +%s%3N)
+# Subtract the end time from the start time,
+# since both are integers representing the number of milliseconds
+# since the [Unix epoch](https://en.wikipedia.org/wiki/Unix_time).
+runTime=$((endTime-startTime))
+if [[-n $numCalls]] 
+then
+	printf "%3i runs took %06i ms. Average: %s\n" $numCalls $runTime "python -c print( $runTime/ float($numCalls) )"
+else
+	printf "%3i runs took %06i ms. Average: %i\n" $numCalls $runTime $runTime
+fi
